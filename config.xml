@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<chickpeas>
+    <chickpea id="d" class="example.dao.ProductDaoImpl"></chickpea>
+    <chickpea id="c" class="example.customer.Customer">
+        <field name="dao" ref="d"></field>
+    </chickpea>
+</chickpeas>
