@@ -7,6 +7,7 @@ import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 public class XMLConfigApplicationContext implements JIOCApplicationContext {
@@ -21,6 +22,7 @@ public class XMLConfigApplicationContext implements JIOCApplicationContext {
     }
 
     private void init() throws Exception{
+        this.chickpeas = new ArrayList<Class>();
         this.document.getDocumentElement().normalize();
         NodeList nList = this.document.getElementsByTagName("chickpea");
 
