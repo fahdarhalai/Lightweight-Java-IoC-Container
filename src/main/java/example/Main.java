@@ -1,7 +1,5 @@
 package example;
 
-import container.context.JIOCApplicationContext;
-import container.context.XMLConfigApplicationContext;
 import example.customer.Customer;
 import example.customer.ICustomer;
 import example.dao.IProductDao;
@@ -9,60 +7,65 @@ import example.dao.ProductDaoImpl;
 import example.products.Product;
 import example.products.SmartPhone;
 import example.products.TV;
+import framework.context.JIOCApplicationContext;
+import framework.context.XMLConfigApplicationContext;
 
 import java.io.File;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 public class Main {
 
-    public static void dependencyInjection_StaticInstantiation(List<Product> productList){
-        ProductDaoImpl dao = new ProductDaoImpl();
+    public static ICustomer dependencyInjection_StaticInstantiation(){
+        IProductDao dao = new ProductDaoImpl();
         Customer customer = new Customer();
         customer.setDao(dao);
-        customer.checkout(productList);
+
+        return customer;
     }
 
-    public static void dependencyInjection_DynamicInstantiation(List<Product> productList) throws Exception{
+    public static ICustomer dependencyInjection_DynamicInstantiation() throws Exception{
         Scanner scanner = new Scanner(new File("config.txt"));
 
-        String daoClassName = scanner.nextLine();
+        String daoClassName = scanner.nextLine(); // "example.dao.ProductDaoImpl"
         Class daoClass = Class.forName(daoClassName);
         IProductDao dao = (IProductDao) daoClass.getDeclaredConstructor().newInstance();
 
-        String customerClassName = scanner.nextLine();
+        String customerClassName = scanner.nextLine(); // example.customer.Customer
         Class customerClass = Class.forName(customerClassName);
         ICustomer customer = (ICustomer) customerClass.getDeclaredConstructor().newInstance();
+
+        // customer.setDao(dao);
 
         Method method = customerClass.getMethod("setDao", IProductDao.class);
         method.invoke(customer, dao);
 
-        customer.checkout(productList);
-
         scanner.close();
+
+        return customer;
     }
 
-    public static void dependencyInjection_JIOC(List<Product> productList) throws Exception {
+    public static ICustomer dependencyInjection_JIOC() throws Exception {
         JIOCApplicationContext ctx = new XMLConfigApplicationContext("config.xml");
+        ICustomer customer = ctx.getChickpea(ICustomer.class);
 
-        // IProductDao dao = ctx.getChickpea(IProductDao.class);
-        // ICustomer customer = ctx.getChickpea("ICustomer");
+        return customer;
     }
 
     public static void main(String[] args) throws Exception {
-        List<Product> productList = new ArrayList<Product>();
+        // CDI
+        JIOCApplicationContext ctx = new XMLConfigApplicationContext("config.xml");
+        ICustomer customer = ctx.getChickpea(Customer.class);
+
+        // Products
         Product tv = new TV("Samsung", 1212);
         Product smartphone = new SmartPhone("Huawei", 730);
-        productList.add(tv);
-        productList.add(smartphone);
 
-        // Dependency Injection using static instantiation
+        // Add products to basket
+        customer.addToBasket(tv);
+        customer.addToBasket(smartphone);
 
-        // Dependency Injection using dynamic instantiation
-
-        // JIOC Dependency Injection
-        dependencyInjection_JIOC(productList);
+        // Checkout
+        customer.checkout();
     }
 }
