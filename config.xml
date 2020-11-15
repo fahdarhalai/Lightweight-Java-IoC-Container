@@ -3,7 +3,7 @@
     <chickpea id="d" class="example.dao.ProductDaoImpl"></chickpea>
 
 
-    <chickpea id="c" class="example.customer.Customer">
+    <chickpea id="c" class="example.customer.Customer" init-method="init">
         <field name="dao" ref="d"></field>
     </chickpea>
 </chickpeas>
