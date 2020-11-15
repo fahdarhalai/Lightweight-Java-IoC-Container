@@ -1,4 +1,4 @@
-package container.chickpeas;
+package framework.chickpeas;
 
 public interface IXMLChickpea {
 
