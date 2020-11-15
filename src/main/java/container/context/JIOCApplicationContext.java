@@ -1,7 +1,8 @@
 package container.context;
 
+import javax.xml.xpath.XPathExpressionException;
+
 public interface JIOCApplicationContext {
 
-    public <E, T> T getChickpea(Class<E> classObject);
-    public <E, T> T getChickpea(String classString);
+    public <T> T getChickpea(Class<T> classObject) throws XPathExpressionException, Exception;
 }
