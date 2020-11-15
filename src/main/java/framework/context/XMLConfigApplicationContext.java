@@ -1,14 +1,17 @@
-package container.context;
+package framework.context;
 
-import container.chickpeas.XMLChickpea;
+import framework.chickpeas.XMLChickpea;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
-import java.lang.reflect.Field;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicReference;
@@ -18,13 +21,13 @@ public class XMLConfigApplicationContext<T> implements JIOCApplicationContext {
     private Document document;
     private HashMap<String, XMLChickpea<T>> chickpeas;
 
-    public XMLConfigApplicationContext(String s) throws Exception {
+    public XMLConfigApplicationContext(String s) throws ParserConfigurationException, ClassNotFoundException, IOException, SAXException {
         this.config = new File(s);
         this.document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(this.config);
         this.init();
     }
 
-    private void init() throws Exception{
+    private void init() throws ClassNotFoundException {
         this.chickpeas = new HashMap<String, XMLChickpea<T>>();
         NodeList nodes = this.document.getElementsByTagName("chickpea");
 
@@ -38,6 +41,11 @@ public class XMLConfigApplicationContext<T> implements JIOCApplicationContext {
                 String className = nElement.getAttribute("class");
                 Class c = Class.forName(className);
                 XMLChickpea chickpea = new XMLChickpea(id, c);
+
+                String initMethod = nElement.getAttribute("init-method");
+                if(initMethod != null && initMethod != ""){
+                    chickpea.setInitMethod(initMethod);
+                }
 
                 NodeList fields = nElement.getElementsByTagName("field");
                 for(int j=0; j<fields.getLength(); j++){
@@ -57,21 +65,28 @@ public class XMLConfigApplicationContext<T> implements JIOCApplicationContext {
         }
     }
 
-    public <T> T instantiateChickpea(XMLChickpea<T> chickpea) throws Exception{
-        T obj = (T) chickpea.getC().getDeclaredConstructor().newInstance();
+    public <T> T instantiateChickpea(XMLChickpea<T> chickpea) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        T obj = chickpea.getC().getDeclaredConstructor().newInstance();
+
         chickpea.getFields().forEach((k,v) -> {
             XMLChickpea field = this.chickpeas.get(v);
             try {
-                Object fObj = instantiateChickpea(field);
-                Field f = chickpea.getC().getDeclaredField(k);
+                Object fieldObj = instantiateChickpea(field);
+
                 String setterName = "set" + k.substring(0,1).toUpperCase() + k.substring(1);
-                System.out.println(field.getC().getInterfaces()[0]);
                 Method setterMethod = chickpea.getC().getMethod(setterName, field.getC().getInterfaces()[0]);
-                setterMethod.invoke(obj, field.getC().getInterfaces()[0].cast(fObj));
-            } catch (Exception e) {
+                setterMethod.invoke(obj, field.getC().getInterfaces()[0].cast(fieldObj));
+
+                String initName = chickpea.getInitMethod();
+                if(initName != null && initName != "") {
+                    Method initMethod = chickpea.getC().getMethod(initName);
+                    initMethod.invoke(obj);
+                }
+            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
                 e.printStackTrace();
             }
         });
+
         return obj;
     }
 
