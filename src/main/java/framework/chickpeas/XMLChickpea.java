@@ -7,6 +7,7 @@ import java.util.List;
 public class XMLChickpea<T> implements IXMLChickpea{
     private String id;
     private Class<T> c;
+    private String initMethod;
     private HashMap<String, String> fields = new HashMap<String, String>(); // <FieldName, Reference>
 
     public XMLChickpea() { }
@@ -36,8 +37,12 @@ public class XMLChickpea<T> implements IXMLChickpea{
         this.c = c;
     }
 
-    public void setFields(HashMap<String, String> fields) {
-        this.fields = fields;
+    public String getInitMethod() {
+        return initMethod;
+    }
+
+    public void setInitMethod(String initMethod) {
+        this.initMethod = initMethod;
     }
 
     public void addField(String name, String ref){
