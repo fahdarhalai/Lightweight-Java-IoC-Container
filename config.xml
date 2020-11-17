@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<peas>
-    <pea id="d" class="example.dao.ProductDaoImpl"></pea>
-
-    <pea id="c" class="example.customer.Customer" init-method="init">
-        <field name="dao" ref="d"></field>
-    </pea>
-</peas>

@@ -14,3 +14,8 @@ target/
 
 # Mac
 .DS_Store
+
+# Other
+src/main/java/example/
+config.txt
+config.xml
