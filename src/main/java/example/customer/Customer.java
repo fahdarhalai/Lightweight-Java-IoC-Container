@@ -2,13 +2,17 @@ package example.customer;
 
 import example.dao.IProductDao;
 import example.products.Product;
+import jioc.annotation.AutoInject;
+import jioc.annotation.Pea;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Pea(initMethod = "init")
 public class Customer implements ICustomer {
+    @AutoInject
     private IProductDao dao;
-    List<Product> basket;
+    private List<Product> basket;
 
     public void init(){
         this.basket = new ArrayList<>();

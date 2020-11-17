@@ -1,6 +1,7 @@
-package framework.context;
+package jioc.xml.configurer;
 
-import framework.chickpeas.XMLChickpea;
+import jioc.ApplicationConfig;
+import jioc.xml.chickpeas.XMLChickpea;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -16,12 +17,12 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class XMLConfigApplicationContext<T> implements JIOCApplicationContext {
+public class XMLApplicationConfig<T> implements ApplicationConfig {
     private File config;
     private Document document;
     private HashMap<String, XMLChickpea<T>> chickpeas;
 
-    public XMLConfigApplicationContext(String s) throws ParserConfigurationException, ClassNotFoundException, IOException, SAXException {
+    public XMLApplicationConfig(String s) throws ParserConfigurationException, ClassNotFoundException, IOException, SAXException {
         this.config = new File(s);
         this.document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(this.config);
         this.init();
@@ -91,7 +92,7 @@ public class XMLConfigApplicationContext<T> implements JIOCApplicationContext {
     }
 
     @Override
-    public <T> T getChickpea(Class<T> classObject) throws Exception {
+    public <T> T getChickpea(Class<T> classObject) {
         AtomicReference<T> out = new AtomicReference<>();
 
         this.chickpeas.forEach((k,v) -> {

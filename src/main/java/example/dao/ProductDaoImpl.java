@@ -1,9 +1,11 @@
 package example.dao;
 
 import example.products.Product;
+import jioc.annotation.Pea;
 
 import java.util.List;
 
+@Pea
 public class ProductDaoImpl implements IProductDao {
     public Product getProduct(int id) {
         return new Product(id, "Sample Product", 999);
