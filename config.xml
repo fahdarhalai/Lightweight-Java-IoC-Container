@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<chickpeas>
-    <chickpea id="d" class="example.dao.ProductDaoImpl"></chickpea>
+<peas>
+    <pea id="d" class="example.dao.ProductDaoImpl"></pea>
 
-
-    <chickpea id="c" class="example.customer.Customer" init-method="init">
+    <pea id="c" class="example.customer.Customer" init-method="init">
         <field name="dao" ref="d"></field>
-    </chickpea>
-</chickpeas>
+    </pea>
+</peas>

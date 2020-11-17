@@ -1,0 +1,2 @@
+example.dao.ProductDaoImpl
+example.customer.Customer
